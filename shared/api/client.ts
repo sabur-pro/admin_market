@@ -53,7 +53,7 @@ class ApiClient {
     this.client.interceptors.request.use(
       (config) => {
         if (typeof window !== 'undefined') {
-          const token = getCookie('access_token') || localStorage.getItem('access_token')
+          const token = getCookie('admin_access_token') || localStorage.getItem('admin_access_token')
           if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`
           }
@@ -74,10 +74,10 @@ class ApiClient {
           console.log('[Admin Auth] Received 401 error, checking tokens...')
           if (originalRequest.url?.includes('/auth/refresh')) {
             if (typeof window !== 'undefined') {
-              localStorage.removeItem('access_token')
-              localStorage.removeItem('refresh_token')
-              removeCookie('access_token')
-              removeCookie('refresh_token')
+              localStorage.removeItem('admin_access_token')
+              localStorage.removeItem('admin_refresh_token')
+              removeCookie('admin_access_token')
+              removeCookie('admin_refresh_token')
               window.location.href = '/login'
             }
             return Promise.reject(error)
@@ -102,15 +102,15 @@ class ApiClient {
           isRefreshing = true
 
           const refreshToken = typeof window !== 'undefined' 
-            ? (getCookie('refresh_token') || localStorage.getItem('refresh_token'))
+            ? (getCookie('admin_refresh_token') || localStorage.getItem('admin_refresh_token'))
             : null
 
           if (!refreshToken) {
             if (typeof window !== 'undefined') {
-              localStorage.removeItem('access_token')
-              localStorage.removeItem('refresh_token')
-              removeCookie('access_token')
-              removeCookie('refresh_token')
+              localStorage.removeItem('admin_access_token')
+              localStorage.removeItem('admin_refresh_token')
+              removeCookie('admin_access_token')
+              removeCookie('admin_refresh_token')
               window.location.href = '/login'
             }
             return Promise.reject(error)
@@ -136,11 +136,11 @@ class ApiClient {
             console.log('[Admin Auth] Token refresh successful')
 
             if (typeof window !== 'undefined') {
-              setCookie('access_token', access_token, 60 * 1) 
-              setCookie('refresh_token', refresh_token, 60 * 60 * 24 * 7) 
+              setCookie('admin_access_token', access_token, 60 * 1) 
+              setCookie('admin_refresh_token', refresh_token, 60 * 60 * 24 * 7) 
               
-              localStorage.setItem('access_token', access_token)
-              localStorage.setItem('refresh_token', refresh_token)
+              localStorage.setItem('admin_access_token', access_token)
+              localStorage.setItem('admin_refresh_token', refresh_token)
             }
 
             if (originalRequest.headers) {
@@ -160,10 +160,10 @@ class ApiClient {
             if (err.response?.status === 401 || err.response?.status === 403) {
               console.log('[Admin Auth] Refresh token invalid, redirecting to login')
               if (typeof window !== 'undefined') {
-                localStorage.removeItem('access_token')
-                localStorage.removeItem('refresh_token')
-                removeCookie('access_token')
-                removeCookie('refresh_token')
+                localStorage.removeItem('admin_access_token')
+                localStorage.removeItem('admin_refresh_token')
+                removeCookie('admin_access_token')
+                removeCookie('admin_refresh_token')
                 window.location.href = '/login'
               }
             }
@@ -207,27 +207,28 @@ export const apiClient = new ApiClient()
 
 export const getAuthToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    return getCookie('access_token') || localStorage.getItem('access_token')
+    return getCookie('admin_access_token') || localStorage.getItem('admin_access_token')
   }
   return null
 }
 
 export const setAuthTokens = (access_token: string, refresh_token: string) => {
   if (typeof window !== 'undefined') {
-    setCookie('access_token', access_token, 60 * 1) 
-    setCookie('refresh_token', refresh_token, 60 * 60 * 24 * 7) 
+    setCookie('admin_access_token', access_token, 60 * 1) 
+    setCookie('admin_refresh_token', refresh_token, 60 * 60 * 24 * 7) 
     
-    localStorage.setItem('access_token', access_token)
-    localStorage.setItem('refresh_token', refresh_token)
+    localStorage.setItem('admin_access_token', access_token)
+    localStorage.setItem('admin_refresh_token', refresh_token)
   }
 }
 
 export const clearAuthTokens = () => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    removeCookie('access_token')
-    removeCookie('refresh_token')
+    localStorage.removeItem('admin_access_token')
+    localStorage.removeItem('admin_refresh_token')
+    localStorage.removeItem('user')
+    removeCookie('admin_access_token')
+    removeCookie('admin_refresh_token')
   }
 }
 
